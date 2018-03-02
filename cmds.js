@@ -112,25 +112,27 @@ exports.playCmd = rl =>{
 	 for(i; i<model.count(); i++){
 	   toBeResolved[i]= model.getByIndex(i); 
 	  }
+	 let id = Math.floor(Math.random()*toBeResolved.length);
 	 const playOne = () =>{
-	   if ( toBeResolved.count() === 0 ){
-		  log ("No hay preguntas", 'red');
+	   if ( toBeResolved.length === 0 ){
+		  log ("No hay mas preguntas", 'red');
 		  return score;
 		  rl.prompt();
 	   } else{
 	       try{
-		   let id = (Math.floor(Math.random()*toBeResolved.count()));
-		   let quiz = toBeResolved(id);
-		   rl.question((quiz.question), answer => {
+		    let quiz = toBeResolved(id);
+		    rl.question(colorize(`Pregunta:  ${quiz.question}`, 'red'), answer => {
 		    if(answer.toLowerCase().trim()=== quiz.answer.toLowerCase().trim()){
 				log("Correcto",'green');
 				score ++;
+				log(`Puntuacion ${colorize(score,'verde')} `);
+				model.update();
 			    delete(toBeResolved(id));
 				playOne();
 
 		     } else{
 			  log ("Incorrecto", 'red');
-			  return score;
+			  log(`Puntuacion ${colorize(score,'magenta')} `);
 			  rl.prompt();
 			 }
 		   });
@@ -139,7 +141,7 @@ exports.playCmd = rl =>{
 			rl.prompt();
 		   }
 		 }
-	  }
+	  };
  
 	 
 };
