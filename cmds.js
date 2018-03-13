@@ -83,19 +83,19 @@ exports.editCmd = (rl, id) => {
 
 exports.testCmd = (rl,id) =>{
 	   if (typeof id === "undefined"){
-		errorlog('Falta el parametro id');
+		errorlog('Falta el parametro id.');
 		rl.prompt();
 	   } else {
 		  try{
 		  const quiz = model.getByIndex(id);
-		  rl.question((quiz.question), answer => {
-		  if(answer.toLowerCase().trim()=== quiz.answer.toLowerCase().trim()){
-				log("Correcto",'green');
-				rl.prompt();
-		   } else{
-			  log ("Incorrecto", 'red');
-			  rl.prompt();
+		  rl.question(colorize(`${quiz.question}`, 'red'), respuesta1 => {
+		  if(respuesta1.toLowerCase().trim()=== (quiz.answer).toLowerCase().trim()){
+				log("Respuesta correcta",'green');
+				//rl.prompt();
+		    } else{
+			  log ("Respuesta incorrecta", 'red');
 			  }
+			  rl.prompt();
 		   });
 		   }catch(error){
 			errorlog(error.message);
@@ -108,42 +108,46 @@ exports.playCmd = rl =>{
 	   
 	 let score = 0;
 	 let toBeResolved = [];
-	 var i=0;
-	 for(i; i<model.count(); i++){
-	   toBeResolved[i]= model.getByIndex(i); 
-	  }
-	 let id = Math.floor(Math.random()*toBeResolved.length);
+	  model.getAll().forEach((quiz, id) => {
+        toBeResolved[id]= quiz;
+      });
+	  
 	 const playOne = () =>{
-	   if ( toBeResolved.length === 0 ){
-		  log ("No hay mas preguntas", 'red');
-		  return score;
+	      if ( toBeResolved.length === 0 ){
+		  log ('No hay mas preguntas','magenta');
+		  log("Fin del juego", 'magenta');
+		   biglog(`Puntuacion ${colorize(score,'magenta')} `);
 		  rl.prompt();
-	   } else{
+	      }
+	     else{
 	       try{
-		    let quiz = toBeResolved(id);
-		    rl.question(colorize(`Pregunta:  ${quiz.question}`, 'red'), answer => {
-		    if(answer.toLowerCase().trim()=== quiz.answer.toLowerCase().trim()){
-				log("Correcto",'green');
+            let randomId = Math.floor(Math.random()*toBeResolved.length);
+		    let quiz= toBeResolved[randomId];
+            // let quiz = model.getByIndex(id);
+			//toBeResolved.splice(toBeResolved.indexOf(quizToAsk), 1);
+		    rl.question(colorize(`${quiz.question}`, 'red'), respuesta2 => {
+		    if(respuesta2.toLowerCase().trim()=== (quiz.answer).toLowerCase().trim()){
+				log("Respuesta correcta",'green');
 				score ++;
-				log(`Puntuacion ${colorize(score,'verde')} `);
-				model.update();
-			    delete(toBeResolved(id));
+				log(`Puntuacion ${colorize(score,'green')} `);
+				//model.update();
+			    toBeResolved.splice(randomId,1);
 				playOne();
 
 		     } else{
-			  log ("Incorrecto", 'red');
-			  log(`Puntuacion ${colorize(score,'magenta')} `);
+			  log ("Respuesta incorrecta", 'red');
+			  log ("Fin del juego", 'red');
+			  biglog(`Puntuacion ${colorize(score,'magenta')} `);
 			  rl.prompt();
 			 }
 		   });
-		  }catch(error){
+		    }catch(error){
 		    errorlog(error.message);
 			rl.prompt();
 		   }
-		 }
+		   }
 	  };
- 
-	 
+	  playOne();
 };
 
 exports.showCmd = (rl, id)=>{

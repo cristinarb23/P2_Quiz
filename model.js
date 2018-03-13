@@ -12,7 +12,7 @@ let quizzes = [
  },
  {
     question:"Capital de Francia",
-    answer: "París"
+    answer: "Paris"
  },
  {
     question:"Capital de España",
@@ -25,32 +25,18 @@ let quizzes = [
 ];
 
 const load = () => {
-
-  fs.readFile(DB_FILENAME, (err, data) => {
-     if (err) {
-        if (err.code === "ENOENT") {
-          save();
-          return;
-        }
-    throw err;
-     }
-
-     let json = JSON.parse(data);
-     if(json){
-	   quizzes = json;
-      }
-   });
+	
 };
 
 const save = () => {
     fs.writeFile(DB_FILENAME,
 	JSON.stringify(quizzes),
 	err => {
-		if(err) throw err;
+		if (err) throw err;
 	});
 };
 
-exports.count = () => quizzes.length;
+exports.count = () =>{ quizzes.length;};
 
 exports.add = (question, answer) => {
 
@@ -64,8 +50,8 @@ exports.add = (question, answer) => {
 exports.update = (id, question, answer) => {
     const quiz = quizzes[id];
 	if( typeof quiz === "undefined"){
-	  throw new Error("El valor del parametro id no es valido");
-	  }
+	  throw new Error(`El valor del parametro id no es valido`);
+	  } 
 	  quizzes.splice(id, 1, {
 	     question: (question ||"").trim(),
 		 answer: (answer ||"").trim()
@@ -79,7 +65,7 @@ exports.getAll = () => JSON.parse(JSON.stringify(quizzes));
 exports.getByIndex = id => {
   const quiz = quizzes [id];
   if (typeof quiz === "undefined"){
-      throw new Error("el valor del parametro id no es correcto");
+      throw new Error(`el valor del parametro id no es correcto`);
 	  }
   return JSON.parse(JSON.stringify(quiz));
 };
@@ -87,7 +73,7 @@ exports.getByIndex = id => {
 exports.deleteByIndex = id => {
   const quiz = quizzes [id];
   if (typeof quiz === "undefined"){
-      throw new Error("el valor del parametro id no es correcto");
+      throw new Error(` el valor del parametro id no es correcto`);
 	  }
  quizzes.splice(id,1);
  save();
